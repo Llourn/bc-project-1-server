@@ -7,7 +7,16 @@ const port = process.env.PORT || 3000;
 const url = "https://api.petfinder.com/v2/animals";
 let token = "";
 
+const weatherKey = "f0acb6d9e0139fb20b34cb331a5c0451";
+let weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=46&lon=66&units=metric&appid=${weatherKey}`;
+
 app.get("/", (req, res) => res.send("🎉"));
+
+app.get("/test", (req, res) => {
+  axios.get(weatherUrl).then((response) => {
+    res.json(response.data);
+  });
+});
 
 app.get("/petfinder", async (req, res) => {
   axios
