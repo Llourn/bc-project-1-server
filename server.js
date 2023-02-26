@@ -3,7 +3,7 @@ const axios = require("axios");
 const express = require("express");
 const app = express();
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 const url = "https://api.petfinder.com/v2/animals";
 let token = "";
 
@@ -60,6 +60,6 @@ app.get("/petfinder", async (req, res) => {
     });
 });
 
-app.listen(process.env.PORT || port, () =>
+app.listen(port, () =>
   console.log(`BC PROJECT 1 SERVER is listening at http://localhost:${port}`)
 );
