@@ -5,8 +5,6 @@ const app = express();
 const url = "https://api.petfinder.com/v2/animals";
 let token = "";
 
-console.log(process.env);
-
 app.get("/", async (req, res) => {
   axios
     .get(url, {
