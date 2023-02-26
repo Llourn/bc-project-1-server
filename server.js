@@ -2,6 +2,8 @@ require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
 const app = express();
+
+const port = 3000;
 const url = "https://api.petfinder.com/v2/animals";
 let token = "";
 
@@ -56,4 +58,6 @@ app.get("/", async (req, res) => {
     });
 });
 
-app.listen(5000);
+app.listen(process.env.PORT || port, () =>
+  console.log(`BC PROJECT 1 SERVER is listening at http://localhost:${port}`)
+);
