@@ -7,7 +7,9 @@ const port = 3000;
 const url = "https://api.petfinder.com/v2/animals";
 let token = "";
 
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => res.send("🎉"));
+
+app.get("/petfinder", async (req, res) => {
   axios
     .get(url, {
       headers: {
