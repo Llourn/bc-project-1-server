@@ -25,17 +25,22 @@ const getAnimalsUrl = "https://api.petfinder.com/v2/animals";
 
 app.get("/", (req, res) => res.send("🎉"));
 
+// app.get("/animals", async (req, res) => {
+//   let result = await getAnimals();
+//   res.json(result);
+// });
+
+// app.get("/token", async (req, res) => {
+//   let result = await refreshToken();
+//   res.json(result);
+// });
+
 app.get("/animals", async (req, res) => {
-  const result = await getData();
+  let result = await initiateCallChain();
   res.json(result);
 });
 
-app.get("/token", async (req, res) => {
-  let result = await getToken();
-  res.json(result);
-});
-
-const getData = async () => {
+const getAnimals = async () => {
   let result;
   try {
     const response = await axios.get(getAnimalsUrl, {
@@ -45,17 +50,13 @@ const getData = async () => {
     });
     result = response.data;
   } catch (error) {
-    result = {
-      message: "There was a problem, couldn't get animals.",
-      token: token,
-      error: error,
-    };
+    result = error;
   }
 
-  return result || { message: "1️⃣ No result provided" };
+  return result || { message: "No result provided: getAnimals()" };
 };
 
-const getToken = async () => {
+const refreshToken = async () => {
   let result;
   try {
     const response = await axios.post(
@@ -63,16 +64,31 @@ const getToken = async () => {
       tokenConfig.data,
       tokenConfig.options
     );
-    result = response.data;
-    token = result.access_token;
+    result = response;
+    token = result.data.access_token;
   } catch (error) {
-    result = {
-      message: "There was a problem refreshing the token.",
-      error: error,
-    };
+    result = error;
   }
 
-  return result || { message: "2️⃣ No result provided" };
+  return result || { message: "No result provided: refreshToken()" };
+};
+
+const initiateCallChain = async () => {
+  let result;
+
+  result = await getAnimals();
+
+  if (result?.code === "ERR_BAD_REQUEST") {
+    result = await refreshToken();
+  }
+
+  if (result?.status !== 200) {
+    return result;
+  }
+
+  result = await getAnimals();
+
+  return result;
 };
 
 app.listen(port, () =>
