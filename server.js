@@ -72,7 +72,7 @@ const getToken = async () => {
     };
   }
 
-  return result.access_token || { message: "2️⃣ No result provided" };
+  return result || { message: "2️⃣ No result provided" };
 };
 
 app.listen(port, () =>
