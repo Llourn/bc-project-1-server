@@ -22,23 +22,28 @@ const tokenConfig = {
 };
 
 const acceptedTypes = [
-  "dog",
-  "cat",
-  "rabbit",
-  "small-furry",
-  "horse",
-  "bird",
-  "scales-fins-other",
-  "barnyard",
+  "Dog",
+  "Cat",
+  "Rabbit",
+  "Small-Furry",
+  "Horse",
+  "Bird",
+  "Scales-Fins-Other",
+  "Barnyard",
 ];
+
+let animalSearchParams = "";
 
 let typeToSearch = "";
 
 const getAnimalsUrl = "https://api.petfinder.com/v2/animals";
 
-app.get("/", (req, res) => res.send("🎉"));
+app.get("/", async (req, res) => {
+  res.send("🦄");
+});
 
 app.get("/animals", async (req, res) => {
+  animalSearchParams = req.originalUrl.split("?")[1];
   let result = await initiateCallChain(getAnimals);
   res.json(result);
 });
@@ -61,6 +66,22 @@ app.get("/:type/breeds", async (req, res) => {
     });
   }
 });
+
+const getAnimals = async () => {
+  let result;
+  try {
+    const response = await axios.get(getAnimalsUrl + "?" + animalSearchParams, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    result = error;
+  }
+
+  return result || { message: "No result provided: getAnimalsV2()" };
+};
 
 const getBreeds = async () => {
   let result;
@@ -95,22 +116,6 @@ const getTypes = async () => {
   }
 
   return result || { message: "No result provided: getTypes()" };
-};
-
-const getAnimals = async () => {
-  let result;
-  try {
-    const response = await axios.get(getAnimalsUrl, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    });
-    result = response.data;
-  } catch (error) {
-    result = error;
-  }
-
-  return result || { message: "No result provided: getAnimals()" };
 };
 
 const refreshToken = async () => {
