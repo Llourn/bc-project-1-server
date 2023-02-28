@@ -4,7 +4,12 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-app.use(cors);
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
 const port = process.env.PORT || 3000;
 
 let token = "";
