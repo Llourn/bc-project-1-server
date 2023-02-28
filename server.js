@@ -21,24 +21,81 @@ const tokenConfig = {
   },
 };
 
+const acceptedTypes = [
+  "dog",
+  "cat",
+  "rabbit",
+  "small-furry",
+  "horse",
+  "bird",
+  "scales-fins-other",
+  "barnyard",
+];
+
+let typeToSearch = "";
+
 const getAnimalsUrl = "https://api.petfinder.com/v2/animals";
 
 app.get("/", (req, res) => res.send("🎉"));
 
-// app.get("/animals", async (req, res) => {
-//   let result = await getAnimals();
-//   res.json(result);
-// });
-
-// app.get("/token", async (req, res) => {
-//   let result = await refreshToken();
-//   res.json(result);
-// });
-
 app.get("/animals", async (req, res) => {
-  let result = await initiateCallChain();
+  let result = await initiateCallChain(getAnimals);
   res.json(result);
 });
+
+app.get("/types", async (req, res) => {
+  let result = await initiateCallChain(getTypes);
+  res.json(result);
+});
+
+app.get("/:type/breeds", async (req, res) => {
+  typeToSearch = req.params.type.toLowerCase();
+  if (acceptedTypes.includes(typeToSearch)) {
+    let result = await initiateCallChain(getBreeds);
+    res.json(result);
+  } else {
+    res.json({
+      message:
+        typeToSearch +
+        " is not a valid animal type. Please choose a valid animal type.",
+    });
+  }
+});
+
+const getBreeds = async () => {
+  let result;
+  try {
+    const response = await axios.get(
+      `https://api.petfinder.com/v2/types/${typeToSearch}/breeds`,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    result = response.data;
+  } catch (error) {
+    result = error;
+  }
+
+  return result || { message: "No result provided: getTypes()" };
+};
+
+const getTypes = async () => {
+  let result;
+  try {
+    const response = await axios.get("https://api.petfinder.com/v2/types", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+    result = response.data;
+  } catch (error) {
+    result = error;
+  }
+
+  return result || { message: "No result provided: getTypes()" };
+};
 
 const getAnimals = async () => {
   let result;
@@ -73,10 +130,10 @@ const refreshToken = async () => {
   return result || { message: "No result provided: refreshToken()" };
 };
 
-const initiateCallChain = async () => {
+const initiateCallChain = async (getData) => {
   let result;
 
-  result = await getAnimals();
+  result = await getData();
 
   if (result?.code === "ERR_BAD_REQUEST") {
     result = await refreshToken();
@@ -86,7 +143,7 @@ const initiateCallChain = async () => {
     return result;
   }
 
-  result = await getAnimals();
+  result = await getData();
 
   return result;
 };
