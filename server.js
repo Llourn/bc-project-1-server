@@ -2,7 +2,9 @@ require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
+app.use(cors);
 const port = process.env.PORT || 3000;
 
 let token = "";
@@ -45,6 +47,7 @@ app.get("/", async (req, res) => {
 app.get("/animals", async (req, res) => {
   animalSearchParams = req.originalUrl.split("?")[1];
   let result = await initiateCallChain(getAnimals);
+
   res.json(result);
 });
 
