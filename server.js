@@ -62,14 +62,14 @@ app.get("/types", async (req, res) => {
 });
 
 app.get("/:type/breeds", async (req, res) => {
-  typeToSearch = req.params.type.toLowerCase();
-  if (acceptedTypes.includes(typeToSearch)) {
+  animalType = req.params.type;
+  if (acceptedTypes.includes(animalType)) {
     let result = await initiateCallChain(getBreeds);
     res.json(result);
   } else {
     res.json({
       message:
-        typeToSearch +
+        animalType +
         " is not a valid animal type. Please choose a valid animal type.",
     });
   }
